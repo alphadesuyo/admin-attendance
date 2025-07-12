@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者ダッシュボード - 出退勤管理システム</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .filters {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .filters h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: white;
+            color: #333;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #333;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #555;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .logs-section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .logs-header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logs-header h3 {
+            color: #333;
+            margin: 0;
+        }
+
+        .logs-count {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .logs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .logs-table th,
+        .logs-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .logs-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .logs-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            min-width: 60px;
+            display: inline-block;
+        }
+
+        .status-in {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-out {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .no-logs {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .download-buttons {
+                flex-direction: column;
+            }
+
+            .logs-table {
+                font-size: 12px;
+            }
+
+            .logs-table th,
+            .logs-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>管理者ダッシュボード</h1>
+        <p>出退勤管理システム - ログ管理画面</p>
+    </div>
+
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3 id="totalLogs">0</h3>
+                <p>総ログ数</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="todayLogs">0</h3>
+                <p>今日のログ数</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="clockInCount">0</h3>
+                <p>出勤回数</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="clockOutCount">0</h3>
+                <p>退勤回数</p>
+            </div>
+        </div>
+
+        <div class="filters">
+            <h3>フィルタリング・検索</h3>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="filterEmployee">従業員名</label>
+                    <select id="filterEmployee">
+                        <option value="">全て</option>
+                        <option value="田中太郎">田中太郎</option>
+                        <option value="佐藤花子">佐藤花子</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterClient">取引先</label>
+                    <select id="filterClient">
+                        <option value="">全て</option>
+                        <option value="A商事">A商事</option>
+                        <option value="B株式会社">B株式会社</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterType">種別</label>
+                    <select id="filterType">
+                        <option value="">全て</option>
+                        <option value="clock_in">出勤</option>
+                        <option value="clock_out">退勤</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterDateFrom">開始日</label>
+                    <input type="date" id="filterDateFrom">
+                </div>
+                <div class="filter-group">
+                    <label for="filterDateTo">終了日</label>
+                    <input type="date" id="filterDateTo">
+                </div>
+            </div>
+            <div class="filter-row">
+                <button class="btn btn-primary" onclick="applyFilters()">フィルタ適用</button>
+                <button class="btn btn-info" onclick="resetFilters()">リセット</button>
+                <button class="btn btn-success" onclick="generateSampleData()">サンプルデータ生成</button>
+            </div>
+            <div class="download-buttons">
+                <button class="btn btn-success" onclick="downloadCSV()">CSV ダウンロード</button>
+                <button class="btn btn-info" onclick="downloadJSON()">JSON ダウンロード</button>
+            </div>
+        </div>
+
+        <div class="logs-section">
+            <div class="logs-header">
+                <h3>出退勤ログ</h3>
+                <div class="logs-count">
+                    表示件数: <span id="displayCount">0</span>件
+                </div>
+            </div>
+            <div id="logsContent">
+                <div class="no-logs">
+                    ログがありません。サンプルデータを生成してください。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // サンプルデータを格納する配列
+        let allLogs = [];
+        let filteredLogs = [];
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            renderLogs();
+        });
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                alert('管理者ログインが必要です。');
+                location.href = '/admin/';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/logs', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+
+                if (!res.ok) {
+                    throw new Error('ログ取得に失敗');
+                }
+
+                allLogs = await res.json();
+                filteredLogs = [...allLogs];
+                updateStats();
+                renderLogs();
+
+            } catch (err) {
+                console.error(err);
+                alert('ログ取得に失敗しました。');
+            }
+        });
+
+
+        // 統計情報の更新
+        function updateStats() {
+            const today = new Date().toLocaleDateString('ja-JP');
+            const todayLogs = allLogs.filter(log => log.date === today);
+            const clockInLogs = allLogs.filter(log => log.type === 'clock_in');
+            const clockOutLogs = allLogs.filter(log => log.type === 'clock_out');
+            
+            document.getElementById('totalLogs').textContent = allLogs.length;
+            document.getElementById('todayLogs').textContent = todayLogs.length;
+            document.getElementById('clockInCount').textContent = clockInLogs.length;
+            document.getElementById('clockOutCount').textContent = clockOutLogs.length;
+        }
+
+        // フィルタ適用
+        function applyFilters() {
+            const employee = document.getElementById('filterEmployee').value;
+            const client = document.getElementById('filterClient').value;
+            const type = document.getElementById('filterType').value;
+            const dateFrom = document.getElementById('filterDateFrom').value;
+            const dateTo = document.getElementById('filterDateTo').value;
+            
+            filteredLogs = allLogs.filter(log => {
+                if (employee && log.employee !== employee) return false;
+                if (client && log.client !== client) return false;
+                if (type && log.type !== type) return false;
+                
+                if (dateFrom) {
+                    const logDate = new Date(log.timestamp);
+                    const filterDate = new Date(dateFrom);
+                    if (logDate < filterDate) return false;
+                }
+                
+                if (dateTo) {
+                    const logDate = new Date(log.timestamp);
+                    const filterDate = new Date(dateTo);
+                    filterDate.setHours(23, 59, 59, 999);
+                    if (logDate > filterDate) return false;
+                }
+                
+                return true;
+            });
+            
+            renderLogs();
+        }
+
+        // フィルタリセット
+        function resetFilters() {
+            document.getElementById('filterEmployee').value = '';
+            document.getElementById('filterClient').value = '';
+            document.getElementById('filterType').value = '';
+            document.getElementById('filterDateFrom').value = '';
+            document.getElementById('filterDateTo').value = '';
+            
+            filteredLogs = [...allLogs];
+            renderLogs();
+        }
+
+        // ログ表示
+        function renderLogs() {
+            const logsContent = document.getElementById('logsContent');
+            const displayCount = document.getElementById('displayCount');
+            
+            displayCount.textContent = filteredLogs.length;
+            
+            if (filteredLogs.length === 0) {
+                logsContent.innerHTML = '<div class="no-logs">該当するログがありません。</div>';
+                return;
+            }
+            
+            let tableHTML = `
+                <table class="logs-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>種別</th>
+                            <th>従業員名</th>
+                            <th>取引先</th>
+                            <th>日付</th>
+                            <th>時刻</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            filteredLogs.forEach(log => {
+                const statusClass = log.type === 'clock_in' ? 'status-in' : 'status-out';
+                const statusText = log.type === 'clock_in' ? '出勤' : '退勤';
+                
+                tableHTML += `
+                    <tr>
+                        <td>${log.id}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>${log.employee}</td>
+                        <td>${log.client}</td>
+                        <td>${log.date}</td>
+                        <td>${log.time}</td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += '</tbody></table>';
+            logsContent.innerHTML = tableHTML;
+        }
+
+        // CSV ダウンロード
+        function downloadCSV() {
+            if (filteredLogs.length === 0) {
+                alert('ダウンロードするデータがありません。');
+                return;
+            }
+            
+            const headers = ['ID', '種別', '従業員名', '取引先', '日付', '時刻', 'タイムスタンプ'];
+            const csvContent = [
+                headers.join(','),
+                ...filteredLogs.map(log => [
+                    log.id,
+                    log.type === 'clock_in' ? '出勤' : '退勤',
+                    log.employee,
+                    log.client,
+                    log.date,
+                    log.time,
+                    log.timestamp
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `attendance_logs_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+
+        // JSON ダウンロード
+        function downloadJSON() {
+            if (filteredLogs.length === 0) {
+                alert('ダウンロードするデータがありません。');
+                return;
+            }
+            
+            const jsonData = {
+                export_date: new Date().toISOString(),
+                total_records: filteredLogs.length,
+                data: filteredLogs
+            };
+            
+            const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `attendance_logs_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+    </script>
+</body>
+</html>
