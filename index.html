@@ -226,6 +226,12 @@
             color: #721c24;
         }
 
+        .status-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+
         .no-logs {
             text-align: center;
             padding: 40px;
@@ -304,6 +310,7 @@
                         <option value="">全て</option>
                         <option value="clock_in">出勤</option>
                         <option value="clock_out">退勤</option>
+                        <option value="overtime_request">残業</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -398,6 +405,8 @@
                 if (employee && log.employee !== employee) return false;
                 if (client && log.client !== client) return false;
                 if (type && log.type !== type) return false;
+                if (type && !log.type.startsWith(type)) return false;
+
                 
                 if (dateFrom) {
                     const logDate = new Date(log.timestamp);
@@ -458,8 +467,20 @@
             `;
             
             filteredLogs.forEach(log => {
-                const statusClass = log.type === 'clock_in' ? 'status-in' : 'status-out';
-                const statusText = log.type === 'clock_in' ? '出勤' : '退勤';
+                let statusClass = '';
+                let statusText = '';
+
+                if (log.type.startsWith('clock_in')) {
+                    statusClass = 'status-in';
+                    statusText = '出勤';
+                } else if (log.type.startsWith('clock_out')) {
+                    statusClass = 'status-out';
+                    statusText = '退勤';
+                } else if (log.type.startsWith('overtime_request')) {
+                    statusClass = 'status-info';
+                    statusText = '残業';
+                }
+
                 
                 tableHTML += `
                     <tr>
