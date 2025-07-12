@@ -353,12 +353,6 @@
         });
 
         document.addEventListener('DOMContentLoaded', async function() {
-            const token = localStorage.getItem('adminToken');
-            if (!token) {
-                alert('管理者ログインが必要です。');
-                location.href = 'https://admin-attendance.netlify.app/';
-                return;
-            }
 
             try {
                 const res = await fetch('https://1c575df0-ec53-4ff0-acc4-786dd52cdf83-00-3nn30g42p0nfd.spock.replit.dev/api/admin/logs', {
