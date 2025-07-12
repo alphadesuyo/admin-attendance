@@ -362,7 +362,7 @@
         document.addEventListener('DOMContentLoaded', async function() {
 
             try {
-                const res = await fetch('http://122.222.227.203:2006/api/admin/logs');
+                const res = await fetch('https://arthritis-shaw-variable-modem.trycloudflare.com/api/admin/logs');
 
                 if (!res.ok) {
                     throw new Error('ログ取得に失敗');
@@ -378,7 +378,6 @@
                 alert('ログ取得に失敗しました。');
             }
         });
-
 
         // 統計情報の更新
         function updateStats() {
