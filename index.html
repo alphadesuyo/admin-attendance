@@ -216,6 +216,16 @@
             display: inline-block;
         }
 
+        .delete-log {
+            margin-top: 20px;
+        }
+        .delete-log input {
+            padding: 5px;
+            width: 100px;
+            margin-right: 10px;
+        }
+
+
         .status-in {
             background-color: #d4edda;
             color: #155724;
@@ -255,6 +265,37 @@
             .logs-table th,
             .logs-table td {
                 padding: 8px;
+            }
+
+            .delete-log {
+                margin-top: 20px;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .delete-log input {
+                padding: 10px;
+                min-width: 120px;
+                flex: 1;
+                max-width: 200px;
+            }
+
+            .delete-log button {
+                padding: 10px 20px;
+                font-weight: bold;
+                cursor: pointer;
+                border: 2px solid #333;
+                background-color: white;
+                color: #333;
+                border-radius: 6px;
+                transition: 0.3s;
+            }
+
+            .delete-log button:hover {
+                background-color: #333;
+                color: white;
             }
         }
     </style>
@@ -322,6 +363,13 @@
                     <input type="date" id="filterDateTo">
                 </div>
             </div>
+
+            <div class="delete-log">
+                <h3>ログ削除（ID指定）</h3>
+                <input type="number" id="deleteLogId" placeholder="削除したいIDを入力">
+                <button onclick="deleteLogById()">削除</button>
+                <p id="deleteMessage"></p>
+            </div>
             <div class="filter-row">
                 <button class="btn btn-primary" onclick="applyFilters()">フィルタ適用</button>
                 <button class="btn btn-info" onclick="resetFilters()">リセット</button>
@@ -362,7 +410,7 @@
         document.addEventListener('DOMContentLoaded', async function() {
 
             try {
-                const res = await fetch('https://arthritis-shaw-variable-modem.trycloudflare.com/api/admin/logs');
+                const res = await fetch('https://makers-dried-hydrocodone-vii.trycloudflare.com/api/admin/logs');
 
                 if (!res.ok) {
                     throw new Error('ログ取得に失敗');
@@ -497,6 +545,28 @@
             
             tableHTML += '</tbody></table>';
             logsContent.innerHTML = tableHTML;
+        }
+
+        function deleteLogById() {
+            const id = document.getElementById('deleteLogId').value;
+            if (!id) {
+                alert('IDを入力してください');
+                return;
+            }
+
+            fetch('https://makers-dried-hydrocodone-vii.trycloudflare.com/api/admin/delete-log', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('deleteMessage').textContent = data.message || '削除しました';
+            })
+            .catch(err => {
+                console.error(err);
+                alert('削除に失敗しました');
+            });
         }
 
         // CSV ダウンロード
