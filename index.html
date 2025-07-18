@@ -340,102 +340,108 @@
     </style>
 </head>
 <body>
+
     <div id="admin-login">
         <h2>管理者ログイン</h2>
         <input type="password" id="admin-password" placeholder="パスワード">
         <button onclick="loginAdmin()">ログイン</button>
         <p id="admin-error" style="color: red;"></p>
     </div>
-    <div class="header">
-        <h1>管理者ダッシュボード</h1>
-        <p>出退勤管理システム - ログ管理画面</p>
-    </div>
 
-    <div class="container">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3 id="totalLogs">0</h3>
-                <p>総ログ数</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="todayLogs">0</h3>
-                <p>今日のログ数</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="clockInCount">0</h3>
-                <p>出勤回数</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="clockOutCount">0</h3>
-                <p>退勤回数</p>
-            </div>
+    <div id="admin-dashboard" style="display: none;">
+        <div class="header">
+            <h1>管理者ダッシュボード</h1>
+            <p>出退勤管理システム - ログ管理画面</p>
         </div>
 
-        <div class="filters">
-            <h3>フィルタリング・検索</h3>
-            <div class="filter-row">
-                <div class="filter-group">
-                    <label for="filterEmployee">従業員名</label>
-                    <select id="filterEmployee">
-                        <option value="">全て</option>
-                        <option value="田中太郎">田中太郎</option>
-                        <option value="佐藤花子">あ</option>
-                    </select>
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalLogs">0</h3>
+                    <p>総ログ数</p>
                 </div>
-                <div class="filter-group">
-                    <label for="filterClient">取引先</label>
-                    <select id="filterClient">
-                        <option value="">全て</option>
-                        <option value="A商事">A商事</option>
-                        <option value="B株式会社">B株式会社</option>
-                    </select>
+                <div class="stat-card">
+                    <h3 id="todayLogs">0</h3>
+                    <p>今日のログ数</p>
                 </div>
-                <div class="filter-group">
-                    <label for="filterType">種別</label>
-                    <select id="filterType">
-                        <option value="">全て</option>
-                        <option value="clock_in">出勤</option>
-                        <option value="clock_out">退勤</option>
-                        <option value="overtime_request">残業</option>
-                    </select>
+                <div class="stat-card">
+                    <h3 id="clockInCount">0</h3>
+                    <p>出勤回数</p>
                 </div>
-                <div class="filter-group">
-                    <label for="filterDateFrom">開始日</label>
-                    <input type="date" id="filterDateFrom">
-                </div>
-                <div class="filter-group">
-                    <label for="filterDateTo">終了日</label>
-                    <input type="date" id="filterDateTo">
+                <div class="stat-card">
+                    <h3 id="clockOutCount">0</h3>
+                    <p>退勤回数</p>
                 </div>
             </div>
 
-            <div class="delete-log">
-                <h3>ログ削除（ID指定）</h3>
-                <input type="number" id="deleteLogId" placeholder="削除したいIDを入力">
-                <button onclick="deleteLogById()">削除</button>
-                <p id="deleteMessage"></p>
-            </div>
-            <div class="filter-row">
-                <button class="btn btn-primary" onclick="applyFilters()">フィルタ適用</button>
-                <button class="btn btn-info" onclick="resetFilters()">リセット</button>
-                <button class="btn btn-success" onclick="generateSampleData()">サンプルデータ生成</button>
-            </div>
-            <div class="download-buttons">
-                <button class="btn btn-success" onclick="downloadCSV()">CSV ダウンロード</button>
-                <button class="btn btn-info" onclick="downloadJSON()">JSON ダウンロード</button>
-            </div>
-        </div>
+            <div class="filters">
+                <h3>フィルタリング・検索</h3>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="filterEmployee">従業員名</label>
+                        <select id="filterEmployee">
+                            <option value="">全て</option>
+                            <option value="田中太郎">田中太郎</option>
+                            <option value="佐藤花子">あ</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterClient">取引先</label>
+                        <select id="filterClient">
+                            <option value="">全て</option>
+                            <option value="A商事">A商事</option>
+                            <option value="B株式会社">B株式会社</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterType">種別</label>
+                        <select id="filterType">
+                            <option value="">全て</option>
+                            <option value="clock_in">出勤</option>
+                            <option value="clock_out">退勤</option>
+                            <option value="overtime_request">残業</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterDateFrom">開始日</label>
+                        <input type="date" id="filterDateFrom">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterDateTo">終了日</label>
+                        <input type="date" id="filterDateTo">
+                    </div>
+                </div>
 
-        <div class="logs-section">
-            <div class="logs-header">
-                <h3>出退勤ログ</h3>
-                <div class="logs-count">
-                    表示件数: <span id="displayCount">0</span>件
+                <div class="delete-log">
+                    <h3>ログ削除（ID指定）</h3>
+                    <input type="number" id="deleteLogId" placeholder="削除したいIDを入力">
+                    <button onclick="deleteLogById()">削除</button>
+                    <p id="deleteMessage"></p>
+                </div>
+
+                <div class="filter-row">
+                    <button class="btn btn-primary" onclick="applyFilters()">フィルタ適用</button>
+                    <button class="btn btn-info" onclick="resetFilters()">リセット</button>
+                    <button class="btn btn-success" onclick="generateSampleData()">サンプルデータ生成</button>
+                </div>
+
+                <div class="download-buttons">
+                    <button class="btn btn-success" onclick="downloadCSV()">CSV ダウンロード</button>
+                    <button class="btn btn-info" onclick="downloadJSON()">JSON ダウンロード</button>
                 </div>
             </div>
-            <div id="logsContent">
-                <div class="no-logs">
-                    ログがありません。サンプルデータを生成してください。
+
+            <div class="logs-section">
+                <div class="logs-header">
+                    <h3>出退勤ログ</h3>
+                    <div class="logs-count">
+                        表示件数: <span id="displayCount">0</span>件
+                    </div>
+                </div>
+                <div id="logsContent">
+                    <div class="no-logs">
+                        ログがありません。サンプルデータを生成してください。
+                    </div>
                 </div>
             </div>
         </div>
