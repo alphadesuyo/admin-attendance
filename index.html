@@ -461,7 +461,7 @@
         document.addEventListener('DOMContentLoaded', async function() {
 
             try {
-                const res = await fetch('https://contemporary-scholar-cage-likelihood.trycloudflare.com/api/admin/logs');
+                const res = await fetch('https://formed-observe-billing-covered.trycloudflare.com/api/admin/logs');
 
                 if (!res.ok) {
                     throw new Error('ログ取得に失敗');
@@ -629,7 +629,7 @@
                 return;
             }
 
-            fetch('https://contemporary-scholar-cage-likelihood.trycloudflare.com/api/admin/delete-log', {
+            fetch('https://formed-observe-billing-covered.trycloudflare.com/api/admin/delete-log', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: id })
