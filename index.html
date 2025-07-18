@@ -301,6 +301,12 @@
     </style>
 </head>
 <body>
+    <div id="admin-login">
+        <h2>管理者ログイン</h2>
+        <input type="password" id="admin-password" placeholder="パスワード">
+        <button onclick="loginAdmin()">ログイン</button>
+        <p id="admin-error" style="color: red;"></p>
+    </div>
     <div class="header">
         <h1>管理者ダッシュボード</h1>
         <p>出退勤管理システム - ログ管理画面</p>
@@ -442,6 +448,26 @@
             document.getElementById('todayLogs').textContent = todayLogs.length;
             document.getElementById('clockInCount').textContent = clockInLogs.length;
             document.getElementById('clockOutCount').textContent = clockOutLogs.length;
+        }
+
+        function loginAdmin() {
+            const password = document.getElementById('admin-password').value;
+            fetch('https://formed-observe-billing-covered.trycloudflare.com/api/admin/login', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('admin-login').style.display = 'none';
+                    document.getElementById('admin-dashboard').style.display = 'block';
+                    loadLogs();
+                } else {
+                    document.getElementById('admin-error').textContent = data.error || 'ログイン失敗';
+                }
+            });
         }
 
         // フィルタ適用
